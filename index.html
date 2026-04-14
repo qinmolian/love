@@ -23,7 +23,7 @@
       </div>
     </section>
 
-    <section class="message-banner" id="messageBanner" hidden>
+    <section class="message-banner" id="messageBanner" hidden aria-live="polite">
       <div class="message-banner__glow"></div>
       <p>我也喜欢你妹妹 每天都想你</p>
     </section>
@@ -32,7 +32,19 @@
       <div class="heart-wrap" id="heartWrap">
         <div class="heart-cloud" id="heartCloud" aria-hidden="true"></div>
         <button class="heart-center-btn" id="heartToggle" type="button">点击</button>
-        <div class="center-wish" id="centerWish" hidden>巅峰赛加油妹妹</div>
+        <article class="center-wish" id="centerWish" hidden tabindex="-1" aria-live="polite">
+          <div class="center-wish__content">
+            <p class="center-wish__eyebrow">给妹妹的小纸条</p>
+            <h3 class="center-wish__title">巅峰赛加油妹妹</h3>
+            <p class="center-wish__lead">把这一句加油，认真地铺开给你看。</p>
+            <div class="center-wish__body">
+              <p>愿你今天手感热热的，判断稳稳的，连胜和好心情一起慢慢靠近你。</p>
+              <p>就算偶尔有一局不太顺，也别让小失落抢走你的光。你本来就很厉害，也一直都很特别。</p>
+              <p>你负责专心发光，我负责把偏爱和祝福悄悄送到你面前。每一把都希望你赢得漂亮，也玩得开心。</p>
+            </div>
+            <p class="center-wish__footer">抬头的时候，记得我一直在替你加油。</p>
+          </div>
+        </article>
       </div>
     </section>
   </main>
