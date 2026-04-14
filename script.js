@@ -87,6 +87,7 @@ const heartWrap = document.getElementById("heartWrap");
 const heartCloud = document.getElementById("heartCloud");
 const heartToggle = document.getElementById("heartToggle");
 const centerWish = document.getElementById("centerWish");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let currentQuestion = 0;
 let isTransitioning = false;
@@ -94,6 +95,8 @@ let confessionStarted = false;
 let heartBuilt = false;
 let isBlooming = false;
 let resizeTimer = 0;
+let immersiveOpened = false;
+let immersiveTimer = 0;
 const bloomTimers = new WeakMap();
 
 function renderQuestion(index) {
@@ -364,6 +367,29 @@ function startBloomLoops() {
   });
 }
 
+function openWishStage() {
+  if (immersiveOpened) {
+    return;
+  }
+
+  immersiveOpened = true;
+  heartStage.classList.add("is-unfolded");
+  heartWrap.classList.add("is-unfolded");
+  centerWish.hidden = false;
+
+  requestAnimationFrame(() => {
+    centerWish.classList.add("is-visible");
+  });
+
+  window.setTimeout(() => {
+    centerWish.focus({ preventScroll: true });
+    heartStage.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "center"
+    });
+  }, prefersReducedMotion ? 0 : 80);
+}
+
 function startBloomingMode() {
   if (!heartBuilt || isBlooming) {
     return;
@@ -372,35 +398,47 @@ function startBloomingMode() {
   isBlooming = true;
   heartStage.classList.add("is-blooming");
   heartWrap.classList.add("is-blooming");
-  heartToggle.hidden = true;
-  centerWish.hidden = false;
+  heartToggle.disabled = true;
+  heartToggle.classList.add("is-vanishing");
 
-  requestAnimationFrame(() => {
-    centerWish.classList.add("is-visible");
-  });
+  window.setTimeout(() => {
+    heartToggle.hidden = true;
+  }, prefersReducedMotion ? 0 : 220);
 
   window.setTimeout(() => {
     startBloomLoops();
-    heartStage.scrollIntoView({ behavior: "smooth", block: "start" });
+    heartStage.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start"
+    });
   }, 120);
+
+  window.clearTimeout(immersiveTimer);
+  immersiveTimer = window.setTimeout(() => {
+    openWishStage();
+  }, prefersReducedMotion ? 40 : 420);
+}
+
+function relayoutHeartStage() {
+  if (!heartBuilt) {
+    return;
+  }
+
+  if (isBlooming) {
+    Array.from(heartCloud.querySelectorAll(".heart-card.is-bloom-visible")).forEach((card) => {
+      applyBloomPosition(card);
+    });
+    return;
+  }
+
+  layoutCards();
 }
 
 function handleResize() {
   window.clearTimeout(resizeTimer);
 
   resizeTimer = window.setTimeout(() => {
-    if (!heartBuilt) {
-      return;
-    }
-
-    if (isBlooming) {
-      Array.from(heartCloud.querySelectorAll(".heart-card.is-bloom-visible")).forEach((card) => {
-        applyBloomPosition(card);
-      });
-      return;
-    }
-
-    layoutCards();
+    relayoutHeartStage();
   }, 120);
 }
 
@@ -409,9 +447,7 @@ window.addEventListener("resize", handleResize);
 
 if ("ResizeObserver" in window) {
   const wrapObserver = new ResizeObserver(() => {
-    if (heartBuilt) {
-      layoutCards();
-    }
+    handleResize();
   });
 
   wrapObserver.observe(heartWrap);

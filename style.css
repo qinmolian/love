@@ -24,16 +24,20 @@ body {
   min-height: 100%;
   margin: 0;
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.5;
   color: var(--text);
   background:
     radial-gradient(circle at 12% 12%, rgba(255, 236, 239, 0.92), transparent 24%),
     radial-gradient(circle at 86% 14%, rgba(255, 246, 231, 0.94), transparent 26%),
     linear-gradient(180deg, #fffefd 0%, #fffaf8 54%, #fffdfc 100%);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button {
   font: inherit;
+  touch-action: manipulation;
 }
 
 [hidden] {
@@ -82,12 +86,14 @@ button {
   position: relative;
   z-index: 1;
   width: min(1080px, calc(100% - 32px));
+  min-height: 100vh;
   min-height: 100dvh;
   margin: 0 auto;
   padding: 24px 0 52px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  isolation: isolate;
 }
 
 .question-stage {
@@ -234,6 +240,10 @@ button {
   transform: translateY(0);
 }
 
+.heart-stage.is-unfolded {
+  width: min(100%, 980px);
+}
+
 .heart-wrap {
   position: relative;
   width: min(88vw, 760px);
@@ -257,6 +267,7 @@ button {
   border-radius: 30px;
   border: 1px solid rgba(255, 255, 255, 0.72);
   pointer-events: none;
+  transition: opacity 0.55s ease;
 }
 
 .heart-wrap::after {
@@ -270,6 +281,7 @@ button {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 236, 239, 0.56) 0%, rgba(255, 243, 226, 0.22) 45%, transparent 70%);
   pointer-events: none;
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
 .heart-wrap.is-blooming {
@@ -284,9 +296,33 @@ button {
     radial-gradient(circle at 50% 78%, rgba(230, 241, 255, 0.28), transparent 30%);
 }
 
+.heart-wrap.is-unfolded {
+  width: min(96vw, 980px);
+  height: min(94svh, 940px);
+  max-height: 940px;
+  border-color: transparent;
+  border-radius: 40px;
+  box-shadow: 0 28px 110px rgba(216, 188, 194, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 254, 252, 0.74), rgba(255, 248, 247, 0.94)),
+    radial-gradient(circle at 18% 18%, rgba(255, 228, 235, 0.42), transparent 26%),
+    radial-gradient(circle at 84% 18%, rgba(255, 240, 223, 0.38), transparent 28%),
+    radial-gradient(circle at 50% 82%, rgba(235, 241, 255, 0.28), transparent 34%);
+}
+
+.heart-wrap.is-unfolded::before {
+  opacity: 0;
+}
+
+.heart-wrap.is-unfolded::after {
+  opacity: 0.38;
+  transform: translate(-50%, -58%) scale(1.35);
+}
+
 .heart-cloud {
   position: absolute;
   inset: 0;
+  transition: opacity 0.65s ease;
 }
 
 .heart-cloud::before {
@@ -303,6 +339,10 @@ button {
 
 .heart-stage.is-blooming .heart-cloud::before {
   opacity: 0.08;
+}
+
+.heart-stage.is-unfolded .heart-cloud {
+  opacity: 0.72;
 }
 
 .heart-card {
@@ -366,26 +406,118 @@ button {
 
 .center-wish {
   position: absolute;
-  left: 50%;
-  top: 54%;
+  inset: 0;
   z-index: 7;
-  min-width: min(54vw, 210px);
-  padding: 14px 20px;
-  border-radius: 18px;
-  border: 1px solid rgba(136, 172, 228, 0.72);
-  background: linear-gradient(135deg, rgba(240, 247, 255, 0.98), rgba(220, 235, 255, 0.98));
-  box-shadow: 0 18px 36px rgba(154, 186, 230, 0.24);
-  color: #4a6793;
-  text-align: center;
-  letter-spacing: 0.04em;
-  transform: translate(-50%, -50%) scale(0.9);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: clamp(92px, 13vh, 148px) clamp(26px, 6vw, 74px) clamp(34px, 8vh, 72px);
+  color: #5f4d51;
   opacity: 0;
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.9, 0.2, 1);
+  pointer-events: none;
+}
+
+.center-wish::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 251, 0.02) 0%, rgba(255, 250, 249, 0.22) 16%, rgba(255, 247, 246, 0.84) 42%, rgba(255, 244, 243, 0.98) 100%),
+    radial-gradient(circle at 22% 22%, rgba(255, 226, 235, 0.44), transparent 28%),
+    radial-gradient(circle at 80% 16%, rgba(255, 239, 223, 0.38), transparent 30%);
+  opacity: 0;
+  transform: translateY(-10%);
+  transition: opacity 0.78s ease, transform 0.94s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.center-wish::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: clamp(24px, 5vh, 42px);
+  width: min(62vw, 440px);
+  height: 1px;
+  transform: translateX(-50%) scaleX(0.72);
+  transform-origin: center;
+  background: linear-gradient(90deg, transparent, rgba(191, 151, 160, 0.58), transparent);
+  opacity: 0;
+  transition: opacity 0.72s ease, transform 0.9s cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
 .center-wish.is-visible {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.center-wish.is-visible::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.center-wish.is-visible::after {
+  opacity: 0.82;
+  transform: translateX(-50%) scaleX(1);
+}
+
+.center-wish__content {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 610px);
+  text-align: center;
+  transform: translateY(54px);
+  opacity: 0;
+  transition: transform 0.88s cubic-bezier(0.18, 0.9, 0.22, 1), opacity 0.72s ease;
+}
+
+.center-wish.is-visible .center-wish__content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.center-wish__eyebrow {
+  margin: 0 0 16px;
+  font-size: 0.78rem;
+  letter-spacing: 0.34em;
+  color: rgba(118, 96, 101, 0.72);
+}
+
+.center-wish__title {
+  margin: 0;
+  font-family: "STSong", "Songti SC", "Noto Serif SC", serif;
+  font-size: clamp(2rem, 4.3vw, 3.7rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: 0.06em;
+}
+
+.center-wish__lead {
+  margin: 18px auto 0;
+  max-width: 22ch;
+  font-size: clamp(1.02rem, 1.9vw, 1.22rem);
+  color: rgba(96, 76, 81, 0.82);
+}
+
+.center-wish__body {
+  margin: 28px auto 0;
+  max-width: 34ch;
+  font-size: clamp(0.98rem, 1.65vw, 1.1rem);
+  line-height: 1.9;
+  color: rgba(96, 76, 81, 0.78);
+}
+
+.center-wish__body p {
+  margin: 0;
+}
+
+.center-wish__body p + p {
+  margin-top: 14px;
+}
+
+.center-wish__footer {
+  margin: 26px auto 0;
+  font-size: 0.88rem;
+  letter-spacing: 0.18em;
+  color: rgba(118, 96, 101, 0.7);
 }
 
 .heart-center-btn {
@@ -413,6 +545,12 @@ button {
   box-shadow: 0 14px 30px rgba(226, 198, 205, 0.14);
   border-color: rgba(224, 183, 192, 0.88);
   outline: none;
+}
+
+.heart-center-btn.is-vanishing {
+  opacity: 0;
+  transform: translate(-50%, -47%) scale(0.86);
+  pointer-events: none;
 }
 
 .heart-stage.is-blooming .heart-center-btn,
@@ -475,6 +613,12 @@ button {
     border-radius: 24px;
   }
 
+  .heart-wrap.is-unfolded {
+    width: calc(100vw - 10px);
+    height: calc(100svh - 10px);
+    border-radius: 26px;
+  }
+
   .heart-card {
     width: clamp(58px, 16vw, 78px);
   }
@@ -494,10 +638,35 @@ button {
   }
 
   .center-wish {
-    top: 55%;
-    min-width: min(58vw, 196px);
-    padding: 12px 16px;
-    font-size: 0.86rem;
+    padding: 74px 20px 28px;
+    align-items: flex-end;
+  }
+
+  .center-wish__content {
+    width: min(100%, 360px);
+  }
+
+  .center-wish__eyebrow {
+    margin-bottom: 12px;
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+  }
+
+  .center-wish__lead {
+    margin-top: 16px;
+    font-size: 0.94rem;
+  }
+
+  .center-wish__body {
+    margin-top: 22px;
+    font-size: 0.92rem;
+    line-height: 1.76;
+  }
+
+  .center-wish__footer {
+    margin-top: 22px;
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
   }
 }
 
